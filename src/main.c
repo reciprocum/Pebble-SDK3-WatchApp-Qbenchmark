@@ -5,49 +5,54 @@
 Window    *my_window ;
 TextLayer *text_layer ;
 
-#define LOOP_COUNT  1000000
+#define INNER_LOOP_COUNT  1000000000
+#define OUTER_LOOP_COUNT  1000000
 
 
 void
 run_benchmark( void )
 {
   // native floats.
-  float e  = 2.71828182845904523536028747135f ;
-  float pi = 3.14159265358979323846264338323f ;
-  float c ;
+  float f_pi  = 3.14159265358979323846264338323f ;
+  float f_acc = 0.0f ;
 
   static uint16_t beforeMs, afterMs ;
   time_ms( NULL, &beforeMs ) ;
   LOGD( "float.beforeMs := %d", beforeMs ) ;
   
-  for (int i = 0  ;  i < LOOP_COUNT  ;  ++i)
-    c = e * pi ;
-
+  for (int j = 0  ;  j < OUTER_LOOP_COUNT  ;  ++j)
+    for (int i = 0  ;  i < INNER_LOOP_COUNT  ;  ++i)
+    {
+      float f_i   = (float)i ;
+      float f_mul = f_i * f_pi ;
+            f_acc = f_acc + f_mul ;
+    }
+  
   time_ms( NULL, &afterMs ) ;
   LOGD( "float.afterMs := %d", afterMs ) ;
   
-  c += 1.0 ;  // Dummy just to mute the "unused variable" compiler warning/error.
-
-  LOGD( "float.elapsed (count = %d) := %d", LOOP_COUNT, (int)(afterMs - beforeMs) ) ;
+  LOGD( "float.elapsed (count = %d) := %d", INNER_LOOP_COUNT, (int)(afterMs - beforeMs) ) ;
   
   
   // Q15.16 floats.
-  Q qE  = Q_E ;
-  Q qPi = Q_PI ;
-  Q qC ;
+  Q q_pi  = Q_PI ;
+  Q q_acc = Q_0 ;
 
   time_ms( NULL, &beforeMs ) ;
   LOGD( "Q.beforeMs := %d", beforeMs ) ;
 
-  for (int i = 0  ;  i < LOOP_COUNT  ;  ++i)
-    qC = Q_mul( qE, qPi ) ;
+  for (int j = 0  ;  j < OUTER_LOOP_COUNT  ;  ++j)
+    for (int i = 0  ;  i < INNER_LOOP_COUNT  ;  ++i)
+    {
+      Q q_i   = Q_make(i) ;
+      Q q_mul = Q_mul( q_i, q_pi ) ;
+        q_acc = Q_add( q_acc, q_mul ) ;
+    }
 
   time_ms( NULL, &afterMs ) ;
   LOGD( "Q.afterMs := %d", afterMs ) ;
 
-  qC = Q_add( qC, Q_1 ) ;  // Dummy just to mute the "unused variable" compiler warning/error.
-
-  LOGD( "Q.elapsed (count = %d) := %d", LOOP_COUNT, (int)(afterMs - beforeMs) ) ;
+  LOGD( "Q.elapsed (count = %d) := %d", INNER_LOOP_COUNT, (int)(afterMs - beforeMs) ) ;
 }
 
 
