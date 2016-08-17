@@ -1,0 +1,24 @@
+{
+    "author": "reciprocum@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "qbenchmark",
+    "pebble": {
+        "capabilities": [
+            ""
+        ],
+        "displayName": "Qbenchmark",
+        "enableMultiJS": false,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "uuid": "53eef927-7bc8-4d38-8650-371f0822ede7",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
