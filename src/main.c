@@ -5,8 +5,7 @@
 Window    *my_window ;
 TextLayer *text_layer ;
 
-#define INNER_LOOP_COUNT  1000000000
-#define OUTER_LOOP_COUNT  1000000
+#define LOOP_COUNT  1000000
 
 
 void
@@ -16,43 +15,51 @@ run_benchmark( void )
   float f_pi  = 3.14159265358979323846264338323f ;
   float f_acc = 0.0f ;
 
+  static time_t beforeS, afterS;
   static uint16_t beforeMs, afterMs ;
-  time_ms( NULL, &beforeMs ) ;
+  time_ms( &beforeS, &beforeMs ) ;
   LOGD( "float.beforeMs := %d", beforeMs ) ;
   
-  for (int j = 0  ;  j < OUTER_LOOP_COUNT  ;  ++j)
-    for (int i = 0  ;  i < INNER_LOOP_COUNT  ;  ++i)
-    {
-      float f_i   = (float)i ;
-      float f_mul = f_i * f_pi ;
-            f_acc = f_acc + f_mul ;
-    }
+  for (int i = 0  ;  i < LOOP_COUNT  ;  ++i)
+  {
+    float f_i   = (float)i ;
+    float f_mul = f_i * f_pi ;
+    f_acc = f_acc + f_mul ;
+  }
   
-  time_ms( NULL, &afterMs ) ;
+  time_ms( &afterS, &afterMs ) ;
   LOGD( "float.afterMs := %d", afterMs ) ;
   
-  LOGD( "float.elapsed (count = %d) := %d", INNER_LOOP_COUNT, (int)(afterMs - beforeMs) ) ;
-  
+  LOGD( "float.elapsed (count = %d) := %d"
+      , LOOP_COUNT
+      , (int)( 1000 * (afterS - beforeS) + afterMs - beforeMs)
+      ) ;
+
+  LOGD( "float.f_acc := %X", (int)f_acc ) ;  // Dummy print to avoid the compiler discarding the whole thing.
   
   // Q15.16 floats.
   Q q_pi  = Q_PI ;
   Q q_acc = Q_0 ;
 
-  time_ms( NULL, &beforeMs ) ;
+  time_ms( &beforeS, &beforeMs ) ;
   LOGD( "Q.beforeMs := %d", beforeMs ) ;
 
-  for (int j = 0  ;  j < OUTER_LOOP_COUNT  ;  ++j)
-    for (int i = 0  ;  i < INNER_LOOP_COUNT  ;  ++i)
-    {
-      Q q_i   = Q_make(i) ;
-      Q q_mul = Q_mul( q_i, q_pi ) ;
-        q_acc = Q_add( q_acc, q_mul ) ;
-    }
+  for (int i = 0  ;  i < LOOP_COUNT  ;  ++i)
+  {
+    Q q_i   = Q_make(i) ;
+    Q q_mul = Q_mul( q_i, q_pi ) ;
+    q_acc = Q_add( q_acc, q_mul ) ;
+  }
 
-  time_ms( NULL, &afterMs ) ;
+  time_ms( &afterS, &afterMs ) ;
   LOGD( "Q.afterMs := %d", afterMs ) ;
 
-  LOGD( "Q.elapsed (count = %d) := %d", INNER_LOOP_COUNT, (int)(afterMs - beforeMs) ) ;
+  LOGD( "Q.elapsed (count = %d) := %d"
+      , LOOP_COUNT
+      , (int)( 1000 * (afterS - beforeS) + afterMs - beforeMs)
+      ) ;
+
+  LOGD( "Q.q_acc := %X", (int)q_acc ) ;  // Dummy print to avoid the compiler discarding the whole thing.
 }
 
 
