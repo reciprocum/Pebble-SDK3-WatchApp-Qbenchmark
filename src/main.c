@@ -5,7 +5,7 @@
 Window    *my_window ;
 TextLayer *text_layer ;
 
-#define LOOP_COUNT  1000000000
+#define LOOP_COUNT  1000000
 
 
 void
